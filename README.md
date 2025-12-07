@@ -1,3 +1,24 @@
+# Busticket — Project Backend
+
+This repository contains the backend and Next.js app for the Busticket project.
+
+Quick links
+- See `USAGE.txt` for full usage, migrations, and deployment instructions.
+- CI workflow: `.github/workflows/migrations.yml` runs migrations and verifies `pnpm build`.
+
+How to run locally
+-------------------
+1. Copy `.env.local.example` to `.env.local` and set Supabase keys.
+2. Install dependencies: `pnpm install`.
+3. Run dev server: `pnpm run dev`.
+
+Deployment
+----------
+See `USAGE.txt` for Docker and CI deployment instructions.
+
+License and contact
+-------------------
+Add license and maintainer contact here.
 # Bus Booking System - Setup Guide
 
 This is a full-stack bus booking system built with Next.js and Supabase.

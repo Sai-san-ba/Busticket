@@ -1,0 +1,63 @@
+name: DB Migrations & Verify
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  migrations:
+    name: Migrations (dry-run + optional apply)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install psql (Postgres client)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Ensure deploy script is executable
+        run: chmod +x ./scripts/deploy_db.sh
+
+      - name: Dry-run migrations
+        run: ./scripts/deploy_db.sh
+
+      - name: Apply migrations (optional)
+        if: ${{ secrets.APPLY_MIGRATIONS == 'true' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "APPLY_MIGRATIONS=true detected — applying migrations"
+          ./scripts/deploy_db.sh --apply
+
+      - name: Success message
+        run: echo "Migrations job completed"
+
+  verify:
+    name: Verify build (pnpm install + pnpm build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Enable corepack and install pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Success
+        run: echo "Build succeeded"
